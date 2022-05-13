@@ -11,6 +11,7 @@ For information on rotation matrices: https://mathworld.wolfram.com/RotationMatr
 #include <stdio.h>
 #include <math.h>
 #include <memory>
+#include <vector>
 
 using namespace std;
 
@@ -36,17 +37,18 @@ public:
     int Vy() const {return V_y;};
     double Sx() const {return S_x;};
     double Sy() const {return S_y;}; 
-    void rotate_slide(unique_ptr<motion> & R);
+    vector<double> rotate_slide(unique_ptr<motion> & R);
     // Translation function
 };
 
 /* Rotation - Updates the slide coordinates to display in viewer coordinate V
 after a rotation of the slide around the center. */
-void Display::rotate_slide(unique_ptr<motion> & R) {
+vector<double> Display::rotate_slide(unique_ptr<motion> & R) {
     double c = cos(R->theta) * Sx() + sin(R->theta) * Sy();
     double d = -sin(R->theta) * Sx() + cos(R->theta) * Sy();
     Sx(c);
     Sy(d);
+    return vector<double> {c, d};
 };
 
 int main() {
@@ -64,13 +66,11 @@ int main() {
     auto r = make_unique<motion>(motion{theta});
 
     // Slide pixel to display in viewer pixel V after rotation theta around the center
-    V1.rotate_slide(r);
+    vector<double> slide_pixel_rot_1 = V1.rotate_slide(r);
 
     // Output display after slide rotation 
     printf("\n\nAfter %f degree rotation of the slide by the user:", angle);
-
-    printf("\nViewer pixel (%d,%d) displays slide pixel (%.2f, %.2f)", V1.Vx(), V1.Vy(), V1.Sx(), V1.Sy());
-    printf("\nSlide pixel is a decimal number, so interpolation across nearest pixals is necessary for display");
+    printf("\nViewer pixel (%d,%d) displays slide pixel (%.2f, %.2f)", V1.Vx(), V1.Vy(), slide_pixel_rot_1[0], slide_pixel_rot_1[1]);
     
     // Rotation of the slide clockwise with respect to the viewer
     angle = -angle; 
@@ -78,12 +78,11 @@ int main() {
     r->theta = theta;
 
     // Slide pixel to display in viewer pixel V after rotation theta around the center
-    V1.rotate_slide(r);
+    vector<double> slide_pixel_rot_2 = V1.rotate_slide(r);
 
     // Output display after slide rotation 
     printf("\n\nAfter %f degree rotation of the slide by the user:", angle);
-    printf("\nViewer pixel (%d,%d) displays slide pixel (%.2f, %.2f)\n", V1.Vx(), V1.Vy(), V1.Sx(), V1.Sy());
-    printf("\n");
+    printf("\nViewer pixel (%d,%d) displays slide pixel (%.2f, %.2f)\n\n", V1.Vx(), V1.Vy(), slide_pixel_rot_2[0], slide_pixel_rot_2[1]);
 
     return 0;
 };
