@@ -37,9 +37,19 @@ public:
     int Vy() const {return V_y;};
     double Sx() const {return S_x;};
     double Sy() const {return S_y;}; 
+    vector<int> get_viewer_coords();
+    vector<double> get_slide_coords();
     vector<double> rotate_slide(unique_ptr<motion> & R);
     // Translation function
 };
+
+vector<int> Display::get_viewer_coords() {
+    return vector<int> {Vx(), Vy()};
+}
+
+vector<double> Display::get_slide_coords() {
+    return vector<double> {Sx(), Sy()};
+}
 
 /* Rotation - Updates the slide coordinates to display in viewer coordinate V
 after a rotation of the slide around the center. */
@@ -48,7 +58,7 @@ vector<double> Display::rotate_slide(unique_ptr<motion> & R) {
     double d = -sin(R->theta) * Sx() + cos(R->theta) * Sy();
     Sx(c);
     Sy(d);
-    return vector<double> {c, d};
+    return get_slide_coords(); 
 };
 
 int main() {
